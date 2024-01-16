@@ -2,10 +2,10 @@
   (:gen-class))
 
 (defn -main [& args]
-  (let [light [(read) (read)] thor (atom [(read) (read)])]
-    (while true
+  (let [light [(read) (read)]]
+    (loop [thor [(read) (read)]]
       (let [remainingTurns (read)]
-        (def difference (map - light @thor))
+        (def difference (map - light thor))
         (def x-diff (first difference))
         (def y-diff (second difference))
 
@@ -14,21 +14,22 @@
             (> x-diff 0) "E"
             (< x-diff 0) "W"
             :else ""))
-
+        
         (def y-move
           (cond
             (> y-diff 0) "S"
             (< y-diff 0) "N"
             :else ""))
 
-        (reset! thor (list
-                      (cond
-                        (= x-move "E") (inc (first @thor))
-                        (= x-move "W") (dec (first @thor))
-                        :else (first @thor))
-                      (cond
-                        (= y-move "S") (inc (second @thor))
-                        (= y-move "N") (dec (second @thor))
-                        :else (second @thor))))
-
-        (println (str y-move x-move))))))
+        (println (str y-move x-move))
+        
+        (recur
+         (vector
+          (case x-move
+            "E" (inc (first thor))
+            "W" (dec (first thor))
+            (first thor))
+          (case y-move
+            "S" (inc (second thor))
+            "N" (dec (second thor))
+            (second thor))))))))
